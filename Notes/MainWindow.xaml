@@ -1,0 +1,34 @@
+﻿<Window x:Class="Notes.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Notes"
+        mc:Ignorable="d"
+        Title="Notes" Height="350" Width="525">
+    <Grid Name="pnlMainGrid">
+
+        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="36" Height="55" Margin="38,15,361,0" Width="118" FontFamily="Showcard Gothic">
+                       Notes
+        </TextBlock>
+        <Button FontWeight="Bold" Content="Create" Background="Green" Margin="39,75,361,202" Click="BtnCreate"/>
+        <Button FontWeight="Bold" Content="Edit" Background="Yellow" Margin="39,122,361,155" Click="BtnEdit"/>
+        <Button FontWeight="Bold" Content="Delete" Background="Red" Margin="39,169,361,108" Click="BtnDelete"/>
+
+        <ListBox Name="lbNotes" HorizontalContentAlignment="Stretch" Margin="182,16,36,46" Background="#FFDDDDF9">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Grid Margin="0,2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="100" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{Binding title_}" />
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        
+        
+    </Grid>
+</Window>
