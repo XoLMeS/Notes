@@ -5,12 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Notes"
         mc:Ignorable="d"
-        Title="Window1" Height="300" Width="320">
+        Title="LoginWindow" Height="300" Width="320">
     <Grid Background="#FF293E47">
-        <PasswordBox Name="Pass" HorizontalAlignment="Left" Margin="54,138,0,0" VerticalAlignment="Top" Height="22" Width="200"/>
-        <TextBox Name="Login" HorizontalAlignment="Left" Height="22" Margin="54,91,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="200" SelectionOpacity="1"/>
-        <Button Name="LogBtn" Content="Log in" HorizontalAlignment="Left" Margin="52,212,0,0" VerticalAlignment="Top" Width="90" Height="30" Click="BtnClickLog"/>
-        <Button Name="SignBtn" Content="Sign up" HorizontalAlignment="Left" Margin="164,212,0,0" VerticalAlignment="Top" Width="88" Height="29" Click="BtnClickSign"/>
+        <PasswordBox Name="Pass" HorizontalAlignment="Left" Margin="54,138,0,0" VerticalAlignment="Top" Height="22" Width="200" PasswordChanged="Pass_PasswordChanged"/>
+        <TextBox Name="Login" HorizontalAlignment="Left" Height="22" Margin="54,91,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="200" SelectionOpacity="1" TextChanged="Login_TextChanged"/>
+        <Button Name="LogBtn" Content="Log in" HorizontalAlignment="Left" Margin="164,210,0,0" VerticalAlignment="Top" Width="90" Height="30" Click="BtnClickLog"/>
+        <Button Name="SignBtn" Content="Sign up" HorizontalAlignment="Left" Margin="54,211,0,0" VerticalAlignment="Top" Width="88" Height="29" Click="BtnClickSign"/>
         <Label Content="Welcome to &quot;Notes&quot;" HorizontalAlignment="Left" Margin="54,35,0,0" VerticalAlignment="Top" Width="198" Height="37" FontSize="18" FontFamily="Showcard Gothic" Foreground="White"/>
 
     </Grid>

@@ -8,7 +8,7 @@ namespace Notes
 {
     class Note
     {   
-        private static int _freeId = 1;
+        private static int _freeId = 0;
         private int _id;
         public string text_ { get; set; }
         public string title_ { get; set; }
@@ -23,7 +23,7 @@ namespace Notes
             title_ = title;
             created_ = new DateTime();
             lastEdited_ = created_;
-            Console.WriteLine(title_);
+            
         }
 #endregion
 

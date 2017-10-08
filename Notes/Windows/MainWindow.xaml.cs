@@ -21,8 +21,12 @@ namespace Notes
 
         static List<Note> items = new List<Note>();
 
-        public MainWindow()
+        public static int currentUser;
+
+        public MainWindow(int userId)
         {
+
+            currentUser = userId;
             InitializeComponent();
             lbNotes.ItemsSource = items;
         }
@@ -34,9 +38,9 @@ namespace Notes
             items.Add(newNote);
             NoteForm form = new NoteForm(newNote.GetId(), newNote.title_,"",this);
             form.Show();
-            Console.WriteLine("Created");
-          
             lbNotes.Items.Refresh();
+
+            StaticRes.LOGGER.Print("User #"+currentUser +" created Note #"+newNote.GetId());
         }
 
         private void BtnEdit(object sender, RoutedEventArgs e)
@@ -45,8 +49,7 @@ namespace Notes
                 Note selectedNote = (lbNotes.SelectedItem as Note);
                 NoteForm form = new NoteForm(selectedNote.GetId(), selectedNote.title_, selectedNote.text_,this);
                 form.Show();
-                Console.WriteLine("Edited");
-             }
+            }
         }
 
         private void BtnDelete(object sender, RoutedEventArgs e)
@@ -60,11 +63,11 @@ namespace Notes
                     if (items.ElementAt(i).GetId()==selectedNote.GetId())
                     {
                         items.RemoveAt(i);
+                        StaticRes.LOGGER.Print("User #" + currentUser + " deleted Note #" + selectedNote.GetId());
                     }
                   
                 }
                 lbNotes.Items.Refresh();
-                Console.WriteLine($"Note id#{selectedNote.GetId()} deleted ");
             }
         }
 #endregion
@@ -77,6 +80,7 @@ namespace Notes
                 {
                     n.text_ = text;
                     n.title_ = title;
+                    StaticRes.LOGGER.Print("User #" + MainWindow.currentUser + " edited Note #" + id);
                 }
             });
         }

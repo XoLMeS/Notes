@@ -56,10 +56,19 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Database.cs" />
+    <Compile Include="User.cs" />
+    <Compile Include="Logger\ConsoleLogger.cs" />
+    <Compile Include="Logger\FileLogger.cs" />
+    <Compile Include="Logger\ILogger.cs" />
     <Compile Include="LoginWindow.xaml.cs">
       <DependentUpon>LoginWindow.xaml</DependentUpon>
     </Compile>
-    <Page Include="MainWindow.xaml">
+    <Compile Include="StaticRes.cs" />
+    <Compile Include="Windows\RegisterWindow.xaml.cs">
+      <DependentUpon>RegisterWindow.xaml</DependentUpon>
+    </Compile>
+    <Page Include="Windows\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -67,14 +76,14 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="NoteForm.cs">
+    <Compile Include="Windows\NoteForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="NoteForm.Designer.cs">
+    <Compile Include="Windows\NoteForm.Designer.cs">
       <DependentUpon>NoteForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Note.cs" />
-    <Compile Include="MainWindow.xaml.cs">
+    <Compile Include="Windows\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
@@ -82,8 +91,13 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Windows\RegisterWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Logger\NullLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -97,7 +111,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <EmbeddedResource Include="NoteForm.resx">
+    <EmbeddedResource Include="Windows\NoteForm.resx">
       <DependentUpon>NoteForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -110,7 +124,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
