@@ -10,7 +10,9 @@ namespace Notes
 {
     class StaticRes
     {
-        public static string USER_APP_DATA_DIR = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+        internal static readonly string AppData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+
+        internal static readonly string ClientDirPath = Path.Combine(AppData, "Notes");
 
         public static ILogger LOGGER = new FileLogger();
 

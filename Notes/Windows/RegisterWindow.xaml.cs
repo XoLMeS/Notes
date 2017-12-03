@@ -46,7 +46,7 @@ namespace Notes.Windows
 
         private void SignUp_Click(object sender, RoutedEventArgs e)
         {
-            User newUser = new User(NameTB.Text, SurnameTB.Text, EmailTB.Text, LoginTB.Text, StaticRes.HashPass(PassBox.Password));
+            UserObj newUser = new UserObj(NameTB.Text, SurnameTB.Text, EmailTB.Text, LoginTB.Text, StaticRes.HashPass(PassBox.Password),1);
             Database.AddUser(newUser);
 
             parentWindow_.Show();

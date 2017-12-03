@@ -10,87 +10,257 @@ namespace Notes
     class Database
     {
 
-        private static List<User> users = new List<User>();
-
         public static bool UserExists(String login)
         {
-            for (int i = 0; i < users.Count; i++)
+            using (var db = new TestEntities3())
             {
-                if (users.ElementAt(i).GetLogin().Equals(login))
+                var query = from b in db.Users
+                            orderby b.Login
+                            select b;
+
+                foreach (var item in query)
                 {
-                    return true;
+                    if (item.Login == login)
+                    {
+                        return true;
+                    }
+
                 }
             }
-             
             return false;
         }
 
         public static bool CheckPass(String login, String pass)
         {
             bool userExists = false;
-            for (int j = 0; j < users.Count; j++)
+            byte[] hashBytes = null;
+
+            using (var db = new TestEntities3())
             {
-                if (users.ElementAt(j).GetLogin().Equals(login))
+                var query = from b in db.Users
+                            orderby b.Login
+                            select b;
+
+                foreach (var item in query)
                 {
-                    userExists = true;
-                    byte[] hashBytes = Convert.FromBase64String(users.ElementAt(j).GetPass());
-                    /* Get the salt */
-                    byte[] salt = new byte[16];
-                    Array.Copy(hashBytes, 0, salt, 0, 16);
-                    /* Compute the hash on the password the user entered */
-                    var pbkdf2 = new Rfc2898DeriveBytes(pass, salt, 10000);
-                    byte[] hash = pbkdf2.GetBytes(20);
-                    /* Compare the results */
-                    for (int i = 0; i < 20; i++)
+                    if (item.Login == login)
                     {
-                        if (hashBytes[i + 16] != hash[i])
-                            throw new UnauthorizedAccessException("Database. Inccorect login");
+                        userExists = true;
+                        hashBytes = Convert.FromBase64String(item.Password);
+                        break;
                     }
-                    break;
+
                 }
             }
 
             if (userExists)
             {
+                /* Get the salt */
+                byte[] salt = new byte[16];
+                Array.Copy(hashBytes, 0, salt, 0, 16);
+                /* Compute the hash on the password the user entered */
+                var pbkdf2 = new Rfc2898DeriveBytes(pass, salt, 10000);
+                byte[] hash = pbkdf2.GetBytes(20);
+                /* Compare the results */
+                for (int i = 0; i < 20; i++)
+                {
+                    if (hashBytes[i + 16] != hash[i])
+                        throw new UnauthorizedAccessException("Database. Inccorect login");
+                }
+
                 return true;
             }
-            else
-            {
-                throw new UnauthorizedAccessException("Database. Inccorect password");
-            }
+
+            throw new UnauthorizedAccessException("Database. Inccorect password");
+           
         }
 
         public static int GetId(String login)
         {
-            for (int j = 0; j < users.Count; j++)
+            using (var db = new TestEntities3())
             {
-                if (users.ElementAt(j).GetLogin().Equals(login))
-                {
-                    return j;
-                }
+                var query = from b in db.Users
+                            orderby b.UserId
+                            select b;
 
+                foreach (var item in query)
+                {
+                    if (item.Login == login)
+                    {
+                        return item.UserId;
+                    }
+
+                }
             }
             return -1;
         }
 
-
-        public static void AddUser(User newUser)
-        {
-            users.Add(newUser);
-            StaticRes.LOGGER.Print("Database. New user #"+ newUser.GetId() + " registreted.");
-        }
-
         public static void UpdateLoginDate(int userId)
         {
-            for (int j = 0; j < users.Count; j++)
+            using (var db = new TestEntities3())
             {
-                if (users.ElementAt(j).GetId() == userId)
-                {
-                    users.ElementAt(j).UpdateLastLogin();
-                }
+                var query = from b in db.Users
+                            orderby b.UserId
+                            select b;
 
+                foreach (var item in query)
+                {
+                    if (item.UserId == userId)
+                    {
+                        item.LastLogin = DateTime.Now;
+                        break;
+                    }
+
+                }
+                db.SaveChanges();
             }
         }
-     
+        
+        public static UserObj GetUser(int id)
+        {
+            using (var db = new TestEntities3())
+            {
+                var query = from b in db.Users
+                            orderby b.UserId
+                            select b;
+
+                foreach (var item in query)
+                {
+                    if (item.UserId == id)
+                    {
+                        return new UserObj(item.Name, item.Surname,item.Email,  item.Login, item.Password,item.UserId);
+                    }
+                   
+                }
+            }
+            return null;
+        }
+
+        public static bool AddUser(UserObj uo)
+        {
+            try
+            {
+                using (var db = new TestEntities3())
+                {
+                    var user = new User { Name = uo.Name, Surname = uo.Surname, Email = uo.Email, Login = uo.Login, Password = uo.Password };
+                    db.Users.Add(user);
+                    db.SaveChanges();
+                    StaticRes.LOGGER.Print("Database. New user #" + uo.UserId + " registreted.");
+                }
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public static List<NoteObj> getUserNotes(int id)
+        {
+            List<NoteObj> notes = new List<NoteObj>();
+            using (var db = new TestEntities3())
+            {
+                var query = from b in db.Notes
+                            orderby b.UserId
+                            select b;
+
+                foreach (var item in query)
+                {
+                    if (item.UserId == id)
+                    {
+                        notes.Add(new NoteObj(item.Title,item.Content,item.NoteId,item.UserId));
+                        NoteObj.freeNoteId = item.NoteId++;
+                    }
+
+                }
+            }
+            return notes;
+        }
+
+        public static bool UpdateNote(NoteObj no)
+        {
+            
+            using (var db = new TestEntities3())
+            {
+                try
+                {
+                    var query = from b in db.Notes
+                                orderby b.NoteId
+                                select b;
+
+                    foreach (var item in query)
+                    {
+                        if (item.NoteId == no.NoteId)
+                        {
+                            item.Content = no.Content;
+                            item.Title = no.Title;
+                            StaticRes.LOGGER.Print("Database. Note Updated #" + no.NoteId + ".");
+                            break;
+                        }
+
+                    }
+                    db.SaveChanges();
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+               
+        }
+
+        public static bool CreateNote(NoteObj no)
+        {
+            using (var db = new TestEntities3())
+            {
+                try
+                {
+                    var note = new Note { Title = no.Title, Content = no.Content, NoteId = no.NoteId, UserId = no.UserId };
+                    db.Notes.Add(note);
+                    db.SaveChanges();
+                    StaticRes.LOGGER.Print("Database. Note Created #" + no.NoteId + ".");
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+             
+        }
+
+        public static bool DeleteNote(NoteObj no)
+        {
+            using (var db = new TestEntities3())
+            {
+                try
+                {
+                    var query = from b in db.Notes
+                                orderby b.NoteId
+                                select b; 
+
+                    foreach (var item in query)
+                    {
+                        if (item.NoteId == no.NoteId)
+                        {
+                            db.Notes.Remove(item);
+                            StaticRes.LOGGER.Print("Database. Note Deleted #" + no.NoteId + ".");
+                            break;
+                        }
+
+                    }
+                    db.SaveChanges();
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+             
+        }
+
+
     }
 }

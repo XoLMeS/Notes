@@ -21,6 +21,7 @@ namespace Notes
 
         private bool _validLogin = false;
         private bool _validPass = false;
+        private UserObj lastUser;
 
         public LoginWindow()
         {
@@ -30,6 +31,16 @@ namespace Notes
             Pass.MaxLength = StaticRes.maxPassLength;
 
             LogBtn.IsEnabled = false;
+
+            try
+            {
+                lastUser = SerializeManager.Deserialize<UserObj>("UserObj");
+                Login.Text = lastUser.Login;
+            }
+            catch (Exception e)
+            {
+                StaticRes.LOGGER.PrintError("FileNotExistsException", e);
+            }
         }
 
 
@@ -42,8 +53,7 @@ namespace Notes
                 {
                     var userId = Database.GetId(Login.Text);
                     Database.UpdateLoginDate(userId);
-
-                    MainWindow main = new MainWindow(userId);
+                    MainWindow main = new MainWindow(Database.GetUser(userId));
                     main.Show();
                     StaticRes.LOGGER.Print("User #"+userId +" logged in");
                     Close();

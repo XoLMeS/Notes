@@ -16,7 +16,7 @@ namespace Notes
         public FileLogger()
         {
             
-            logger_dir = Path.Combine(StaticRes.USER_APP_DATA_DIR, "Notes_logs");
+            logger_dir = Path.Combine(StaticRes.AppData, "Notes_logs");
             if (!Directory.Exists(logger_dir))
             {
                 Directory.CreateDirectory(logger_dir);

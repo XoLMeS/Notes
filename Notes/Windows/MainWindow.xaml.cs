@@ -1,7 +1,10 @@
-﻿using System;
+﻿using Notes.Windows;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -9,45 +12,55 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+
 namespace Notes
 {
+
 
     public partial class MainWindow : Window
     {
 
-        static List<Note> items = new List<Note>();
+        List<NoteObj> items;
+        
 
-        public static int currentUser;
+        internal static UserObj currentUser;
 
-        public MainWindow(int userId)
+        public MainWindow(UserObj user)
         {
-
-            currentUser = userId;
+            currentUser = user;
+            StaticRes.LOGGER.Print(""+currentUser.UserId);
+            items = Database.getUserNotes(currentUser.UserId);
             InitializeComponent();
             lbNotes.ItemsSource = items;
+
+            Closing += (this.OnApplicationExit);
+
+            ProgBar.IsIndeterminate = false;
+            HideProgressBar();
         }
 
-        #region BtnEvents
+ #region BtnEvents
         private void BtnCreate(object sender, RoutedEventArgs e)
         {
-            Note newNote = new Note("New note");
+            NoteObj newNote = new NoteObj("New note");
             items.Add(newNote);
-            NoteForm form = new NoteForm(newNote.GetId(), newNote.title_,"",this);
+            Database.CreateNote(newNote);
+            NoteWindow form = new NoteWindow(newNote.NoteId, newNote.Title,"",this);
             form.Show();
             lbNotes.Items.Refresh();
-
-            StaticRes.LOGGER.Print("User #"+currentUser +" created Note #"+newNote.GetId());
+            StaticRes.LOGGER.Print(currentUser.UserId +" created Note #"+newNote.NoteId);
         }
 
         private void BtnEdit(object sender, RoutedEventArgs e)
         {
-            if (lbNotes.SelectedItem != null) { 
-                Note selectedNote = (lbNotes.SelectedItem as Note);
-                NoteForm form = new NoteForm(selectedNote.GetId(), selectedNote.title_, selectedNote.text_,this);
+            if (lbNotes.SelectedItem != null) {
+                NoteObj selectedNote = (lbNotes.SelectedItem as NoteObj);
+                NoteWindow form = new NoteWindow(selectedNote.NoteId, selectedNote.Title, selectedNote.Content,this);
                 form.Show();
             }
         }
@@ -56,14 +69,16 @@ namespace Notes
         {
             if (lbNotes.SelectedItem != null)
             {
-                Note selectedNote = (lbNotes.SelectedItem as Note);
+                NoteObj selectedNote = (lbNotes.SelectedItem as NoteObj);
                
                 for (int i = 0; i < items.Count; i++)
                 {
-                    if (items.ElementAt(i).GetId()==selectedNote.GetId())
+                    if (items.ElementAt(i).NoteId==selectedNote.NoteId)
                     {
+                        Database.DeleteNote(items.ElementAt(i));
                         items.RemoveAt(i);
-                        StaticRes.LOGGER.Print("User #" + currentUser + " deleted Note #" + selectedNote.GetId());
+                        StaticRes.LOGGER.Print(currentUser.UserId + " deleted Note #" + selectedNote.NoteId);
+                        break;
                     }
                   
                 }
@@ -72,17 +87,63 @@ namespace Notes
         }
 #endregion
 
-        public static void SaveNote(int id, string title, string text)
+        public void SaveNote(int id, string title, string text)
         {
-            items.ForEach(delegate (Note n)
+            items.ForEach(delegate (NoteObj n)
             {
-                if (n.GetId()==id)
+            if (n.NoteId == id)
                 {
-                    n.text_ = text;
-                    n.title_ = title;
-                    StaticRes.LOGGER.Print("User #" + MainWindow.currentUser + " edited Note #" + id);
+                n.Content = text;
+                n.Title = title;
+                StaticRes.LOGGER.Print(MainWindow.currentUser.UserId + " edited Note #" + id);
+
+                    BackgroundWorker worker = new BackgroundWorker();
+                    worker.WorkerReportsProgress = true;
+                    worker.DoWork += Worker_DoWork;
+                    worker.ProgressChanged += Worker_ProgressChanged;
+                    worker.RunWorkerAsync();
+                    ShowProgressBar();
+                    //TO DO SAVE IN DATABASE
+                    Database.UpdateNote(new NoteObj(title, text, id, currentUser.UserId));
                 }
             });
+        }
+
+        void Worker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            for (int i = 0; i < 100; i++)
+            {
+                (sender as BackgroundWorker).ReportProgress(i);
+                Thread.Sleep(100);
+            }
+            HideProgressBar();
+        }
+
+        void Worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            ProgBar.Value = e.ProgressPercentage;
+        }
+
+
+        private void OnApplicationExit(object sender, EventArgs e)
+        {
+            SerializeManager.Serialize(currentUser);
+            StaticRes.LOGGER.Print(currentUser.UserId + "Serializzed");
+        }
+
+        private void HideProgressBar()
+        {
+            this.Dispatcher.Invoke((Action)(() => {
+                ProgBar.Visibility = Visibility.Hidden;
+                LabelSaving.Visibility = Visibility.Hidden;
+            }));
+        }
+        private void ShowProgressBar()
+        {
+            this.Dispatcher.Invoke((Action)(() => {
+                ProgBar.Visibility = Visibility.Visible;
+                LabelSaving.Visibility = Visibility.Visible;
+            }));
         }
 
     }
