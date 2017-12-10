@@ -16,6 +16,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Threading;
 
 
 namespace Notes
@@ -24,6 +25,7 @@ namespace Notes
 
     public partial class MainWindow : Window
     {
+        BackgroundWorker worker = new BackgroundWorker();
 
         List<NoteObj> items;
         
@@ -96,17 +98,22 @@ namespace Notes
                 n.Content = text;
                 n.Title = title;
                 StaticRes.LOGGER.Print(MainWindow.currentUser.UserId + " edited Note #" + id);
-
-                    BackgroundWorker worker = new BackgroundWorker();
+                   
                     worker.WorkerReportsProgress = true;
                     worker.DoWork += Worker_DoWork;
                     worker.ProgressChanged += Worker_ProgressChanged;
                     worker.RunWorkerAsync();
                     ShowProgressBar();
-                    //TO DO SAVE IN DATABASE
-                    Database.UpdateNote(new NoteObj(title, text, id, currentUser.UserId));
+
+                    Thread newThread = new Thread(DoWork);
+                    newThread.Start(new NoteObj(title, text, id, currentUser.UserId));
                 }
             });
+        }
+
+        public static void DoWork(object data)
+        {
+                Database.UpdateNote((NoteObj) data);
         }
 
         void Worker_DoWork(object sender, DoWorkEventArgs e)
@@ -114,7 +121,7 @@ namespace Notes
             for (int i = 0; i < 100; i++)
             {
                 (sender as BackgroundWorker).ReportProgress(i);
-                Thread.Sleep(100);
+                Thread.Sleep(10);
             }
             HideProgressBar();
         }
@@ -129,6 +136,7 @@ namespace Notes
         {
             SerializeManager.Serialize(currentUser);
             StaticRes.LOGGER.Print(currentUser.UserId + "Serializzed");
+            worker.Dispose();
         }
 
         private void HideProgressBar()
