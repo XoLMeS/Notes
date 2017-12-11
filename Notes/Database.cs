@@ -179,7 +179,7 @@ namespace Notes
 
         public static bool UpdateNote(NoteObj no)
         {
-            
+            Console.WriteLine("UpdateNote " + no.NoteId);   
             using (var db = new TestEntities3())
             {
                 try
@@ -190,16 +190,21 @@ namespace Notes
 
                     foreach (var item in query)
                     {
+                        
                         if (item.NoteId == no.NoteId)
                         {
                             item.Content = no.Content;
                             item.Title = no.Title;
-                            StaticRes.LOGGER.Print("Database. Note Updated #" + no.NoteId + ".");
+                            
+                            //StaticRes.LOGGER.Print("Database. Note Updated #" + no.NoteId + ".");
+                           
                             break;
                         }
 
                     }
+                    
                     db.SaveChanges();
+                   
                     return true;
                 }
                 catch

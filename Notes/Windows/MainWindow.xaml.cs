@@ -113,7 +113,8 @@ namespace Notes
 
         public static void DoWork(object data)
         {
-                Database.UpdateNote((NoteObj) data);
+            Console.WriteLine("Saving...");
+            Database.UpdateNote((NoteObj) data);
         }
 
         void Worker_DoWork(object sender, DoWorkEventArgs e)
