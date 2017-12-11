@@ -87,7 +87,15 @@ namespace Notes
                 lbNotes.Items.Refresh();
             }
         }
-#endregion
+
+        private void LogOut_Click(object sender, RoutedEventArgs e)
+        {
+            LoginWindow lg = new LoginWindow();
+            lg.Show();
+            StaticRes.LOGGER.Print("User #" + currentUser.UserId + " logged out");
+            this.Close();
+        }
+        #endregion
 
         public void SaveNote(int id, string title, string text)
         {
@@ -155,5 +163,6 @@ namespace Notes
             }));
         }
 
+        
     }
 }

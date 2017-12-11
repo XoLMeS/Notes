@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Notes.Windows"
         mc:Ignorable="d"
-        Title="NoteWindow" Height="300" Width="300">
+        Title="NoteWindow" Height="300" Width="300" ResizeMode="NoResize">
     <Grid>
         <Button Name="BtnCancel" Content="Cancel" HorizontalAlignment="Left" Margin="10,233,0,0" VerticalAlignment="Top" Width="120" Height="26" Click="Button_Click_BtnCancel"/>
         <Button Name="BtnSave" Content="Save" HorizontalAlignment="Left" Margin="162,233,0,0" VerticalAlignment="Top" Width="120" Height="26" Click="Button_Click_BtnSave"/>

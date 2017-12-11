@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Notes.Windows"
         mc:Ignorable="d"
-        Title="RegisterWindow" Height="400" Width="300">
+        Title="RegisterWindow" Height="400" Width="300" ResizeMode="NoResize">
     <Grid Margin="0,0,0,0">
         <Button Name="Cancel" Content="Cancel" HorizontalAlignment="Left" Margin="25,317,0,0" VerticalAlignment="Top" Width="91" Height="33" Click="Cancel_Click"/>
         <Button Name="SignUp" Content="Sign up" HorizontalAlignment="Left" Margin="184,317,0,0" VerticalAlignment="Top" Width="91" Height="33" Click="SignUp_Click"/>

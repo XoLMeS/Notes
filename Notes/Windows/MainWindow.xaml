@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Notes"
         mc:Ignorable="d"
-        Title="Notes" Height="350" Width="525">
+        Title="Notes" Height="350" Width="525" ResizeMode="NoResize">
     <Grid Name="pnlMainGrid">
 
         <TextBlock HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="36" Height="55" Margin="38,15,361,0" Width="118" FontFamily="Showcard Gothic">
@@ -30,6 +30,7 @@
         </ListBox>
         <ProgressBar x:Name="ProgBar" HorizontalAlignment="Left" Height="15" Margin="360,290,0,0" VerticalAlignment="Top" Width="120"/>
         <Label x:Name="LabelSaving" Content="saving..." HorizontalAlignment="Left" VerticalAlignment="Top" Margin="400,282,0,0" Height="26" Width="60"/>
+        <Button Name="LogOut" Content="Log out" HorizontalAlignment="Left" Margin="10,282,0,0" VerticalAlignment="Top" Width="80" Height="25" Click="LogOut_Click"/>
 
 
     </Grid>
